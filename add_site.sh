@@ -17,13 +17,13 @@ if [[ "$indextype" != "php" && "$indextype" != "html" ]]; then
   exit 1
 fi
 
-# Create the directory for the new website
-cd /var/www/html || { echo "Error: Unable to change directory to /var/www/html. Ensure the path exists."; exit 1; }
-mkdir $url
+# Create the directory for the new website (requires sudo)
+echo "Creating directory for the new website..."
+sudo mkdir /var/www/html/$url || { echo "Error: Failed to create directory. Please check permissions."; exit 1; }
 
-# Change ownership of the directory to www-data (requires sudo)
-echo "Changing ownership of /var/www/html/$url to www-data..."
-sudo chown -R www-data:www-data /var/www/html/$url || { echo "Error: Failed to change ownership. Please check permissions."; exit 1; }
+# Change ownership of the directory to www-data and grant group write permissions
+sudo chown -R www-data:$USER /var/www/html/$url || { echo "Error: Failed to change ownership. Please check permissions."; exit 1; }
+sudo chmod -R 775 /var/www/html/$url || { echo "Error: Failed to set permissions. Please check permissions."; exit 1; }
 
 # Create Apache configuration file for the new site (requires sudo)
 echo "Creating Apache configuration file for $url..."
